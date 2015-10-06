@@ -23,7 +23,7 @@ for branch in `git branch -r | grep origin/v`; do
   current_head=$(git rev-parse HEAD)
   echo " > current HEAD at $current_head"
 
-  last_head=$(cat $REFS_PATH/$branch 2>/dev/null || "NONE")
+  last_head=$(cat $REFS_PATH/$branch 2>/dev/null || echo "NONE")
   echo " > last build HEAD at $last_head"
 
   if [[ $current_head != $last_head ]]; then
