@@ -38,5 +38,16 @@ for branch in `git branch -r | grep origin/v`; do
   fi
 done
 
+# loop through builds and delete obsolete ones
+for branch in `ls $DESTINATION`; do
+  branch_exists=$(git branch --list "$branch")
+
+  if [[ ! $branch_exists ]]; then
+    echo ""
+    echo " > branch $branch has been removed from remote, deleting build..."
+    rm -rf $DESTINATION/$branch
+  fi
+done
+
 echo ""
 echo "done."
