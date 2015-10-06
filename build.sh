@@ -8,8 +8,9 @@ DESTINATION="../dist"
 JEKYLL_ENV="production"
 REFS_PATH="../refs"
 
-# ensure dir existence
+# ensure dirs existence
 mkdir -p $REFS_PATH
+mkdir -p $DESTINATION
 
 # loop through remote branches
 # and build all versions with changes
@@ -26,7 +27,7 @@ for branch in `git branch -r | grep origin/v`; do
   last_head=$(cat $REFS_PATH/$branch 2>/dev/null || echo "NONE")
   echo " > last build HEAD at $last_head"
 
-  if [[ $current_head != $last_head ]]; then
+  if [[ ($current_head != $last_head) || (! -d "$DESTINATION/$branch") ]]; then
     echo " > $branch has changes, building..."
     bundle install --no-cache --clean --deployment
     rm -rf $DESTINATION/$branch
@@ -35,7 +36,6 @@ for branch in `git branch -r | grep origin/v`; do
   else
     echo " > $branch is up to date, skipping build"
   fi
-
 done
 
 echo ""
