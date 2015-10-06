@@ -4,7 +4,7 @@
 set -e
 
 # vars
-DESTINATION="_site"
+DESTINATION="../dist"
 JEKYLL_ENV="production"
 REFS_PATH="../refs"
 
