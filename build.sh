@@ -4,6 +4,7 @@
 set -e
 
 # vars
+SOURCE="."
 DESTINATION="../dist"
 JEKYLL_ENV="production"
 REFS_PATH="../refs"
@@ -27,14 +28,27 @@ for branch in `git branch -r | grep origin/v`; do
   last_head=$(cat $REFS_PATH/$branch 2>/dev/null || echo "NONE")
   echo " > last build HEAD at $last_head"
 
-  if [[ ($current_head != $last_head) || (! -d "$DESTINATION/$branch") ]]; then
-    echo " > $branch has changes, building..."
+  build_not_found=""
+  has_changes=""
+
+  if [[ $current_head != $last_head ]]; then
+    echo " > $branch has changes"
+    has_changes=1
+  fi
+
+  if [[ ! -d "$DESTINATION/$branch" ]]; then
+    build_not_found=1
+    echo " > $branch built not found"
+  fi
+
+  if [[ $has_changes || $build_not_found ]]; then
+    echo " > building..."
     bundle install --no-cache --clean --deployment
     rm -rf $DESTINATION/$branch
-    jekyll build --destination $DESTINATION/$branch
+    jekyll build --source $SOURCE --destination $DESTINATION/$branch
     echo $current_head > "$REFS_PATH/$branch"
   else
-    echo " > $branch is up to date, skipping build"
+    echo " > $branch build is up to date, skipping."
   fi
 done
 
