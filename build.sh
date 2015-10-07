@@ -20,7 +20,9 @@ for branch in `git branch -r | grep origin/v`; do
   echo " > checking out $branch"
 
   branch=${branch##*/}
+  echo ""
   git checkout $branch
+  echo ""
 
   current_head=$(git rev-parse HEAD)
   echo " > current HEAD at $current_head"
@@ -43,10 +45,12 @@ for branch in `git branch -r | grep origin/v`; do
 
   if [[ $has_changes || $build_not_found ]]; then
     echo " > building..."
+    echo ""
     bundle install --no-cache --clean --deployment
     rm -rf $DESTINATION/$branch
     jekyll build --source $SOURCE --destination $DESTINATION/$branch
     echo $current_head > "$REFS_PATH/$branch"
+    echo ""
   else
     echo " > $branch build is up to date, skipping."
   fi
@@ -64,4 +68,4 @@ for branch in `ls $DESTINATION`; do
 done
 
 echo ""
-echo "done."
+echo " > done."
