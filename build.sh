@@ -4,7 +4,6 @@
 set -e
 
 # vars
-SOURCE="."
 DESTINATION="../dist"
 REFS_PATH="../refs"
 
@@ -62,7 +61,8 @@ for branch in `git branch -r | sed 1d | grep $branch_filter`; do
     echo ""
     bundle install --no-cache --clean --deployment
     rm -rf $DESTINATION/$branch
-    jekyll build --source $SOURCE --destination $DESTINATION/$branch
+    echo "baseurl: \"/docs/$branch\"" > _config-prod.yml
+    jekyll build --destination $DESTINATION/$branch --config _config.yml,_config-prod.yml
     echo $current_head > "$REFS_PATH/$branch"
     echo ""
   else
