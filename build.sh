@@ -6,20 +6,34 @@ set -e
 # vars
 SOURCE="."
 DESTINATION="../dist"
-JEKYLL_ENV="production"
 REFS_PATH="../refs"
 
 # ensure dirs existence
 mkdir -p $REFS_PATH
 mkdir -p $DESTINATION
 
+# based on env filter out branches to build
+if [[ $JEKYLL_ENV == "production" ]]; then
+  branch_filter="origin/v"
+else
+  branch_filter="origin/"
+fi
+
 # loop through remote branches
 # and build all versions with changes
-for branch in `git branch -r | grep origin/v`; do
-  echo ""
-  echo " > checking out $branch"
+for branch in `git branch -r | sed 1d | grep $branch_filter`; do
+  branch=$(echo $branch | sed s/origin\\///)
 
-  branch=${branch##*/}
+  [[ $branch == "build" ]] && continue
+
+  echo ""
+
+  if [[ $branch == *"/"* ]]; then
+    echo " > branch name \"$branch\" contains a slash, skipping..."
+    continue
+  fi
+
+  echo " > checking out $branch"
   echo ""
   git checkout $branch
   echo ""
@@ -57,13 +71,13 @@ for branch in `git branch -r | grep origin/v`; do
 done
 
 # loop through builds and delete obsolete ones
-for branch in `ls $DESTINATION`; do
-  branch_exists=$(git branch --list "$branch")
+for build in `ls $DESTINATION`; do
+  branch_exists=$(git branch --list "$build")
 
   if [[ ! $branch_exists ]]; then
     echo ""
-    echo " > branch $branch has been removed from remote, deleting build..."
-    rm -rf $DESTINATION/$branch
+    echo " > branch $build has been removed from remote, deleting build..."
+    rm -rf $DESTINATION/$build
   fi
 done
 
