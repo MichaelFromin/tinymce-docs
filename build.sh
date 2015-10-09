@@ -59,7 +59,36 @@ for branch in `git branch -r | sed 1d | grep $branch_filter`; do
 
   if [[ $has_changes || $build_not_found ]]; then
     echo " > building..."
+
+    # api_version=$(cat .api-version)
+    api_version=4.2.6
     echo ""
+    echo " > pointing to API version $api_version"
+    echo ""
+
+    # checkout correct tinymce version and build it
+    echo ""
+    echo " > builidng tinymce $api_version"
+    echo ""
+    cd ../tinymce
+    git checkout $api_version
+    npm i
+    grunt default
+
+    # build API docs
+    echo ""
+    echo " > builidng tinymce docs $api_version"
+    echo ""
+    cd ../moxiedoc
+    ./bin/moxiedoc ../tinymce/js/tinymce/classes -t tinymcenext
+    unzip -o tmp/out.zip -d ../tinymce-docs/api
+    rm tmp/out.zip
+
+    # jekyll build
+    echo ""
+    echo " > builidng jekyll docs"
+    echo ""
+    cd ../tinymce-docs
     bundle install --no-cache --clean --deployment
     rm -rf $DESTINATION/$branch
     echo "baseurl: \"/docs/$branch\"" > _config-prod.yml
