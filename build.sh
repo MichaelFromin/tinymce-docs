@@ -72,7 +72,7 @@ for branch in `git branch -r | sed 1d | grep $branch_filter`; do
     echo ""
     cd ../tinymce
     git checkout $api_version
-    npm i
+    rm -rf node_modules && npm i
     grunt default
 
     # build API docs
