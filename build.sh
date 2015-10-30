@@ -67,22 +67,22 @@ for branch in `git branch -r | sed 1d | grep $branch_filter`; do
     echo ""
 
     # checkout correct tinymce version and build it
-    echo ""
-    echo " > builidng tinymce $api_version"
-    echo ""
-    cd ../tinymce
-    git checkout $api_version
-    rm -rf node_modules && npm i
-    grunt default
+    # echo ""
+    # echo " > builidng tinymce $api_version"
+    # echo ""
+    # cd ../tinymce
+    # git checkout $api_version
+    # rm -rf node_modules && npm i
+    # grunt default
 
     # build API docs
-    echo ""
-    echo " > builidng tinymce docs $api_version"
-    echo ""
-    cd ../moxiedoc
-    ./bin/moxiedoc ../tinymce/js/tinymce/classes -t tinymcenext
-    unzip -o tmp/out.zip -d ../tinymce-docs/api
-    rm tmp/out.zip
+    # echo ""
+    # echo " > builidng tinymce docs $api_version"
+    # echo ""
+    # cd ../moxiedoc
+    # ./bin/moxiedoc ../tinymce/js/tinymce/classes -t tinymcenext
+    # unzip -o tmp/out.zip -d ../tinymce-docs/api
+    # rm tmp/out.zip
 
     # jekyll build
     echo ""
