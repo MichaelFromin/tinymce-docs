@@ -111,12 +111,5 @@ for build in `ls $DESTINATION`; do
   fi
 done
 
-# get latest version and set it as homepage
-versions=$(ls -1 $DESTINATION | grep ^v)
-latest=$(echo $versions | sort -V | sed -e '$!d')
-echo ""
-echo " > setting /docs homepage to $latest"
-echo ${INDEX_TPL//URL/\/docs\/$latest\/} > $DESTINATION/index.html
-
 echo ""
 echo " > done."
