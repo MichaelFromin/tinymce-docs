@@ -4,13 +4,15 @@
 set -e
 
 # vars
-DESTINATION="../dist"
-REFS_PATH="../refs"
-INDEX_TPL=$(cat index.html)
+PWD=`pwd`
+BUILDS_DIR="${PWD}/../builds"
+DIST_DIR="${PWD}/../dist"
+REFS_DIR="${PWD}/../refs"
 
 # ensure dirs existence
-mkdir -p $REFS_PATH
-mkdir -p $DESTINATION
+mkdir -p $REFS_DIR
+mkdir -p $BUILDS_DIR
+mkdir -p $DIST_DIR
 
 # based on env filter out branches to build
 if [[ $JEKYLL_ENV == "production" ]]; then
@@ -31,6 +33,12 @@ for branch in `git branch -r | sed 1d | grep $branch_filter`; do
   if [[ $branch == *"/"* ]]; then
     echo " > branch name \"$branch\" contains a slash, skipping..."
     continue
+  fi
+
+  if [[ $branch == "master" ]]; then
+    basedir=""
+  else
+    basedir="/${branch}"
   fi
 
   echo " > checking out $branch"
@@ -90,10 +98,10 @@ for branch in `git branch -r | sed 1d | grep $branch_filter`; do
     echo ""
     cd ../tinymce-docs
     bundle install --no-cache --clean --deployment
-    rm -rf $DESTINATION/$branch
-    echo "baseurl: \"/docs/$branch\"" > _config-prod.yml
-    jekyll build --destination $DESTINATION/$branch --config _config.yml,_config-prod.yml
-    echo $current_head > "$REFS_PATH/$branch"
+    rm -rf $BUILDS_DIR/$branch
+    echo "baseurl: \"/docs$basedir\"" > _config-prod.yml
+    jekyll build --destination $BUILDS_DIR/$branch --config _config.yml,_config-prod.yml
+    echo $current_head > "$REFS_DIR/$branch"
     echo ""
   else
     echo " > $branch build is up to date, skipping."
@@ -101,14 +109,23 @@ for branch in `git branch -r | sed 1d | grep $branch_filter`; do
 done
 
 # loop through builds and delete obsolete ones
-for build in `ls $DESTINATION`; do
+for build in `ls $BUILDS_DIR`; do
   branch_exists=$(git branch --list "$build")
 
   if [[ ! $branch_exists ]]; then
     echo ""
     echo " > branch $build has been removed from remote, deleting build..."
-    rm -rf $DESTINATION/$build
+    rm -rf $BUILDS_DIR/$build
   fi
+done
+
+# create 1:1 bucket structure
+rm -rf $DIST_DIR/docs
+cp -R $BUILDS_DIR/master $DIST_DIR/docs
+
+for build in `ls $BUILDS_DIR`; do
+  [[ $build == "master" ]] && continue
+  cp -R $BUILDS_DIR/$build $DIST_DIR/docs/$build
 done
 
 echo ""
