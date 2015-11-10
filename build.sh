@@ -49,7 +49,7 @@ for branch in `git branch -r | sed 1d | grep $branch_filter`; do
   current_head=$(git rev-parse HEAD)
   echo " > current HEAD at $current_head"
 
-  last_head=$(cat $REFS_PATH/$branch 2>/dev/null || echo "NONE")
+  last_head=$(cat $REFS_DIR/$branch 2>/dev/null || echo "NONE")
   echo " > last build HEAD at $last_head"
 
   build_not_found=""
@@ -60,7 +60,7 @@ for branch in `git branch -r | sed 1d | grep $branch_filter`; do
     has_changes=1
   fi
 
-  if [[ ! -d "$DESTINATION/$branch" ]]; then
+  if [[ ! -d "$BUILDS_DIR/$branch" ]]; then
     build_not_found=1
     echo " > $branch built not found"
   fi
