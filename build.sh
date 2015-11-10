@@ -62,7 +62,7 @@ for branch in `git branch -r | sed 1d | grep $branch_filter`; do
 
   if [[ ! -d "$BUILDS_DIR/$branch" ]]; then
     build_not_found=1
-    echo " > $branch built not found"
+    echo " > $branch build not found"
   fi
 
   if [[ $has_changes || $build_not_found ]]; then
