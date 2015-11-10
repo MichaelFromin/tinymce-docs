@@ -23,7 +23,7 @@ fi
 
 # loop through remote branches
 # and build all versions with changes
-for branch in `git branch -r | sed 1d | grep $branch_filter`; do
+for branch in `git branch -r | sed 1d | grep -e master -e $branch_filter`; do
   branch=$(echo $branch | sed s/origin\\///)
 
   [[ $branch == "build" ]] && continue
@@ -68,8 +68,7 @@ for branch in `git branch -r | sed 1d | grep $branch_filter`; do
   if [[ $has_changes || $build_not_found ]]; then
     echo " > building..."
 
-    # api_version=$(cat .api-version)
-    api_version=4.2.6
+    api_version=$(cat .api-version)
     echo ""
     echo " > pointing to API version $api_version"
     echo ""
